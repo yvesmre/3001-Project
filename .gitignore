@@ -1,0 +1,5 @@
+Labs/
+src/
+venv/
+*.code-workspace
+*.rtf
