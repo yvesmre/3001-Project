@@ -376,8 +376,20 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
         print("enemy:", x, y, "distance from mario:", x-mario_x, enemy_name)
 
         if(x-mario_x < 35 and x-mario_x > 0):
-          return 5
+          return 2
 
+
+    for block in block_locations:
+        block_x = block[0][0]
+        block_y = block[0][1]
+        block_width = block[1][0]
+        block_height = block[1][1]
+        block_name = block[2]
+        if(block_name == 'pipe'):
+            print(f"{block_name}: {(block_x, block_y)}), {(block_width, block_height)}")
+            print(block_y-mario_y)
+            if(block_x-mario_x < 20 and block_y-mario_y < 0 and block_x-mario_x > 0):
+                return 2
 
 
     return 1
