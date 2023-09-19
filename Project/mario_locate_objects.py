@@ -75,7 +75,7 @@ image_files = {
 }
 
 def _get_template(filename):
-    image = cv.imread("Project/mario_locate_objects/"  + filename)
+    image = cv.imread("Project/"  + filename)
     assert image is not None, f"File {filename} does not exist."
     template = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     mask = np.uint8(np.where(np.all(image == MASK_COLOUR, axis=2), 0, 1))
@@ -265,15 +265,15 @@ def make_action(screen, info, step, env, prev_action):
     # Printing the whole grid is slow, so I am only printing it occasionally,
     # and I'm only printing it for debug purposes, to see if I'm locating objects
     # correctly.
-    if PRINT_GRID and step % 100 == 0:
-        print_grid(screen, object_locations)
+  #  if PRINT_GRID and step % 100 == 0:
+   #     print_grid(screen, object_locations)
         # If printing the grid doesn't display in an understandable way, change
         # the settings of your terminal (or anaconda prompt) to have a smaller
         # font size, so that everything fits on the screen. Also, use a large
         # terminal window / whole screen.
 
         # object_locations contains the locations of all the objects we found
-        print(object_locations)
+    #    print(object_locations)
 
     # List of locations of Mario:
     mario_locations = object_locations["mario"]
@@ -351,13 +351,36 @@ def make_action(screen, info, step, env, prev_action):
 
     if step % 10 == 0:
         # I have no strategy at the moment, so I'll choose a random action.
-        action = env.action_space.sample()
+        action = rule_based_agent(info, mario_locations, enemy_locations, block_locations, item_locations, prev_action)
         return action
     else:
         # With a random agent, I found that choosing the same random action
         # 10 times in a row leads to slightly better performance than choosing
         # a new random action every step.
         return prev_action
+
+
+def rule_based_agent(info, mario_locations, enemy_locations, block_locations, item_locations, prev_action):
+
+    location, dimensions, object_name = mario_locations[0]
+    mario_x, mario_y = location
+    print("Mario's location on screen:",
+    mario_x, mario_y, f"({object_name} mario)")
+
+    jump = False
+ 
+    for enemy in enemy_locations:      
+        enemy_location, enemy_dimensions, enemy_name = enemy
+        x, y = enemy_location
+        width, height = enemy_dimensions
+        print("enemy:", x, y, "distance from mario:", x-mario_x, enemy_name)
+
+        if(x-mario_x < 35 and x-mario_x > 0):
+          return 5
+
+
+
+    return 1
 
 ################################################################################
 
