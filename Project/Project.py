@@ -74,7 +74,7 @@ image_files = {
 }
 
 def _get_template(filename):
-    image = cv.imread(filename)
+    image = cv.imread("Project/" + filename)
     assert image is not None, f"File {filename} does not exist."
     template = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     mask = np.uint8(np.where(np.all(image == MASK_COLOUR, axis=2), 0, 1))
@@ -253,6 +253,8 @@ def locate_objects(screen, mario_status):
 ################################################################################
 # GETTING INFORMATION AND CHOOSING AN ACTION
 
+jumping = 0
+
 def make_action(screen, info, step, env, prev_action, prev_location, prev_block, stuck_counter, stuck):
     mario_status = info["status"]
     object_locations = locate_objects(screen, mario_status)
@@ -357,6 +359,8 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
 
     print("STUCKKKKKK: ", stuck)
 
+    
+
     if mario_locations:
             location1, dimensions1, object_name1 = mario_locations[0]
             mario_x, mario_y = location1
@@ -412,6 +416,14 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
 def rule_based_agent(info, mario_locations, enemy_locations, block_locations, item_locations, prev_action, prev_location, prev_block, stuck):
     mario_world_x = info["x_pos"]
     mario_world_y = info["y_pos"]
+
+    global jumping
+
+    print("jumping " , jumping)
+
+    if jumping > 0:
+        jumping-=1
+        return 2, stuck
 
     enemy_list = []
     pipe_list = []
@@ -482,6 +494,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
     print("COUNT: ", count, " ", pipe_list_in)
 
     if prev_action == 1 or prev_action == None or prev_action == 9:
+
         if count > 0 and len(enemy_list) > 0:                                  #if there is pipe ahead && if there are enemies ahead
             for mob in enemy_list:
                 x, y = mob
@@ -496,6 +509,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
                 elif (pipe_list_in[0])[0][0] < x:                                          #if mob is behind the pipe
                         if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0:          #if pipe is in front of mario, jump
                             print("IFFFFFFFFFFF 2222222222222222222222")
+                            jumping = 20
                             return 4, stuck
                         else:
                             return 1, stuck
@@ -516,7 +530,8 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
         elif count > 0 and len(enemy_list) == 0:                               #if there is pipe ahead && if there is no enemy ahead
             print("IFFFFFFFFFFF 3333333333333333333333")
             if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0:          #if pipe is in front of mario, jump
-                return 4, stuck
+                jumping = 10
+                return 2, stuck
 
             else:
                 return 1, stuck
@@ -541,10 +556,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
 
         if mario_x >= pipe_x - pipe_width // 2 and mario_x <= pipe_x + pipe_width // 2 and mario_y < pipe_y:             #check if mario is above a pipe
             print("SUCCESSFUL LANDING")
-            print("SUCCESSFUL LANDING")
-            print("SUCCESSFUL LANDING")
-            print("SUCCESSFUL LANDING")
-            print("SUCCESSFUL LANDING")
+           
 
             if stuck == 0 and prev_action == 4:
                 stuck = 2
