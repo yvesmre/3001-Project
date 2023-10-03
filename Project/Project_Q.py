@@ -305,8 +305,11 @@ def state_processing(state, info):
     object_locations = locate_objects(state, mario_status)
     block_locations = object_locations['block']
     mario_locations = object_locations['mario']
-    location, dimensions, object_name = mario_locations[0]
-    x, y = location
+    x = 0
+    y = 0
+    if len(mario_locations) > 0:
+        location, dimensions, object_name = mario_locations[0]
+        x, y = location
     return x, y, block_locations
 
 
@@ -429,6 +432,7 @@ def train_agent():
             cv_coords = preprocess_cv_coordinates(x, y)
             extra_coords = preprocess_extra_coordinates(x, y, block_locations)  # Additional coordinates
             state_input = [frame, cv_coords, extra_coords]
+            print(state_input)
             action = epsilon_greedy_action(q_network1, state_input, epsilon)
 
             # Take the chosen action and observe the next state and reward
@@ -468,9 +472,9 @@ def train_agent():
 
         print(f"Episode {episode + 1}: Reward = {episode_reward}")
 
-    # Save the trained Q-network
-    q_network1.save("mario_q_network1.h5")
-    q_network2.save("mario_q_network2.h5")
+        # Save the trained Q-network
+        q_network1.save("mario_q_network1.h5")
+        q_network2.save("mario_q_network2.h5")
 
 
 # Start training the agent
