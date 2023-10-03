@@ -24,7 +24,7 @@ EPSILON_END = 0.1  # Final exploration rate
 EPSILON_DECAY_STEPS = 10000  # Exploration rate decay steps
 LEARNING_RATE = 0.0001  # Learning rate for Q-network
 MAX_EPISODES = 10000000  # Maximum number of episodes
-MAX_STEPS_PER_EPISODE = 100000  # Maximum number of steps per episode
+MAX_STEPS_PER_EPISODE = 1000  # Maximum number of steps per episode
 
 ################################################################################
 
@@ -432,7 +432,7 @@ def train_agent():
             cv_coords = preprocess_cv_coordinates(x, y)
             extra_coords = preprocess_extra_coordinates(x, y, block_locations)  # Additional coordinates
             state_input = [frame, cv_coords, extra_coords]
-            print(state_input)
+            #print(state_input)
             action = epsilon_greedy_action(q_network1, state_input, epsilon)
 
             # Take the chosen action and observe the next state and reward
