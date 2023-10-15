@@ -355,7 +355,6 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
     mario_y = 99
     coo_value = 0
 
-    #print("STUCKKKKKK: ", stuck)
 
     if mario_locations:
             location1, dimensions1, object_name1 = mario_locations[0]
@@ -369,7 +368,6 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
         for coo in stuck_counter:
             coo_value = coo_value + coo
 
-        #print("ABS VALUE: ", abs(coo_value // 20 - stuck_counter[9]))
 
         if abs(coo_value // 20 - stuck_counter[9]) == 0:
             stuck = 1
@@ -428,12 +426,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
 
     location, dimensions, object_name = mario_locations[0]
     mario_x, mario_y = location
-  #  print("MARIO LOCATION: ", mario_x, " AND ", mario_y)
-
-   # print("PREV LOCATION: ", prev_location)
-
-    print(mario_x, ": ", mario_y)
-
+   
     on_solid_ground = False
     for block in block_locations:
         block_x = block[0][0]
@@ -443,15 +436,22 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
         block_name = block[2]
 
         if(block_y - mario_y) > 0:
-            if(abs(mario_x-block_x) < 10):
+            if(abs(mario_x-block_x) < 9):
+                print(block_y-mario_y, block_x-mario_x, mario_x, block_x)    
                 on_solid_ground = True
 
     if not on_solid_ground:
         jumping = 20
-        return 2, stuck, jumping
+        return 4, stuck, jumping
+    
 
     for enemy in enemy_locations:
             enemy_location, enemy_dimensions, enemy_name = enemy
+
+            if enemy_name == "koopa":
+                x1, y1 = enemy_location
+                enemy_location = (x1, y1 + 7)
+
             enemy_list.append(enemy_location)
             x, y = enemy_location
             width, height = enemy_dimensions
@@ -459,10 +459,10 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
             pointer_list1 = sorted(enemy_list, key=lambda x: custom_sorting_heuristic1(x))
             enemy_list = pointer_list1
 
-          #  print("ENEMY LIST: ", enemy_list)
+            #print("ENEMY LIST: ", enemy_list)
 
-            ##print("ENEMY NAME: ", enemy_name)
-            ##print("ENEMY LOCATION: ", x, " AND ", y)
+            # print("ENEMY NAME: ", enemy_name)
+            # print("ENEMY LOCATION: ", x, " AND ", y)
 
     for block1 in block_locations:
             block_x = block1[0][0]
@@ -508,15 +508,22 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
 
     if prev_action == 1 or prev_action == None or prev_action == 9:
 
-        #######IF there is a hole ahead#######
+        blocked = False
+        for block in block_locations:
+            block_x = block[0][0]
+            block_y = block[0][1]
+            block_width = block[1][0]
+            block_height = block[1][1]
+            block_name = block[2]
 
-            #CODE GOES HERE#
+            if(block_y - mario_y) < 0 and (block_y-mario_y) > -4:
+               if(abs(mario_x-block_x) < 12):
+                  print("Name:", block_name, "Block Y: ",block_y, " Mario Y:", mario_y, "Diff:", block_y-mario_y)
+                  blocked = True
 
-
-        #######IF there is a weird loking pyrimad ahead#######
-
-            #CODE GOES HERE#
-
+        if blocked and on_solid_ground:
+            jumping = 20
+            return 4, stuck, jumping
 
         if count > 0 and len(enemy_list) > 0:                                  #if there is pipe ahead && if there are enemies ahead
             for mob in enemy_list:
@@ -554,7 +561,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
            # print("IFFFFFFFFFFF 3333333333333333333333")
             if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0:          #if pipe is in front of mario, jump
                 jumping = 20
-                return 2, stuck, jumping
+                return 4, stuck, jumping
 
             else:
                 return 1, stuck, jumping
@@ -648,7 +655,6 @@ env.reset()
 for step in range(100000):
     if obs is not None:
         action, prev_location, prev_block, stuck_counter, stuck, jumping = make_action(obs, info, step, env, action, prev_location, prev_block, stuck_counter, stuck, jumping)
-        print("ACTION< PREV< PREV: ", action)
     else:
         action = 1
 
