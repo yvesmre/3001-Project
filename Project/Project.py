@@ -349,6 +349,15 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
     #              action = 1 means press 'right' button
     #              action = 2 means press 'right' and 'A' buttons at the same time
 
+
+
+
+
+
+
+
+
+    # This is where the the provided code ends and our rule based agent begins
     prev_x = 0
     prev_y = 0
     mario_x = 99
@@ -377,15 +386,12 @@ def make_action(screen, info, step, env, prev_action, prev_location, prev_block,
 
 
     if jumping > 0:
-        #print("jumping " , jumping)
         jumping-=1
         action = 4
-
     elif stuck == 1 and jumping == 0:
         action = 9
 
     elif stuck == 2 and prev_action == 0:
-       # print("TRIGERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRED")
         stuck = stuck + 1
         action = 0
 
@@ -459,10 +465,6 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
             pointer_list1 = sorted(enemy_list, key=lambda x: custom_sorting_heuristic1(x))
             enemy_list = pointer_list1
 
-            #print("ENEMY LIST: ", enemy_list)
-
-            # print("ENEMY NAME: ", enemy_name)
-            # print("ENEMY LOCATION: ", x, " AND ", y)
 
     for block1 in block_locations:
             block_x = block1[0][0]
@@ -475,10 +477,6 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
                 pipe_list.append(block1)
                 pointer_list2 = sorted(pipe_list, key=lambda x: custom_sorting_heuristic2(x))
                 pipe_list = pointer_list2
-
-              #  print("PIPE LIST: ", pipe_list)
-
-            ##print("BLOCK NAME: ", block_name)
 
     if prev_block != None:
         for block2 in prev_block:
@@ -493,7 +491,6 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
                 pointer_list3 = sorted(prev_pipe_list, key=lambda y: custom_sorting_heuristic2(y))
                 prev_pipe_list = pointer_list3
 
-            #    print("PREV PIPE LIST: ", prev_pipe_list)
             
     for item_location, item_dimensions, item_name in item_locations:
             x, y = item_location
@@ -504,7 +501,6 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
         if pipe[0][0] > mario_x:
                 count = count + 1
                 pipe_list_in.append(pipe)
-   # print("COUNT: ", count, " ", pipe_list_in)
 
     if prev_action == 1 or prev_action == None or prev_action == 9:
 
@@ -518,7 +514,6 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
 
             if(block_y - mario_y) < 0 and (block_y-mario_y) > -4:
                if(abs(mario_x-block_x) < 12):
-                  print("Name:", block_name, "Block Y: ",block_y, " Mario Y:", mario_y, "Diff:", block_y-mario_y)
                   blocked = True
 
         if blocked and on_solid_ground:
@@ -529,37 +524,35 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
             for mob in enemy_list:
                 x, y = mob
                
-                if abs(y - (pipe_list_in[0])[0][1]) < 5 and (pipe_list_in[0])[0][0] > x:      #if both mob and pipe are on the same level and mob is in front of pipe
-                        if x - mario_x < 35 and x - mario_x > 0:                            #squash the mob if mob is in front of mario
-                      #      print("IFFFFFFFFFFF 1111111111111111111111")
+                if abs(y - (pipe_list_in[0])[0][1]) < 5 and (pipe_list_in[0])[0][0] > x:  #if both mob and pipe are on the same level and mob is in front of pipe
+                        if x - mario_x < 35 and x - mario_x > 0:                          #squash the mob if mob is in front of mario
+                    
                             return 2, stuck, jumping
                         else:
                             return 1, stuck, jumping
 
-                elif (pipe_list_in[0])[0][0] < x:                                          #if mob is behind the pipe
-                        if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0:          #if pipe is in front of mario, jump
-                        #    print("IFFFFFFFFFFF 2222222222222222222222")
+                elif (pipe_list_in[0])[0][0] < x:  #if mob is behind the pipe
+                        if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0: #if pipe is in front of mario, jump
                             jumping = 20
                             return 4, stuck, jumping
                         else:
                             return 1, stuck, jumping
                     
-                else:                                                                   #not enough distance
+                else:  #not enough distance
                         return 1, stuck, jumping
 
-        elif len(enemy_list) > 0 and count == 0:                               #if there no pipe ahead && if there are enemies ahead
+        elif len(enemy_list) > 0 and count == 0:   #if there no pipe ahead && if there are enemies ahead
             for mob in enemy_list:
                 x, y = mob
 
-                if x - mario_x < 55 and x - mario_x > 0 and abs(y - mario_y) < 5:       #squash the mob if mob is in front of mario and on the same level
+                if x - mario_x < 55 and x - mario_x > 0 and abs(y - mario_y) < 5:  #squash the mob if mob is in front of mario and on the same level
                     return 2, stuck, jumping
 
                 else:
-                    return 1, stuck, jumping                                                 #not enough distance or not on the same level
+                    return 1, stuck, jumping #not enough distance or not on the same level
 
-        elif count > 0 and len(enemy_list) == 0:                               #if there is pipe ahead && if there is no enemy ahead
-           # print("IFFFFFFFFFFF 3333333333333333333333")
-            if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0:          #if pipe is in front of mario, jump
+        elif count > 0 and len(enemy_list) == 0: #if there is pipe ahead && if there is no enemy ahead
+            if (pipe_list_in[0])[0][0] - mario_x < 30 and (pipe_list_in[0])[0][0] - mario_x > 0: #if pipe is in front of mario, jump
                 jumping = 20
                 return 4, stuck, jumping
 
@@ -584,18 +577,14 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
             pipe_height = (pipe_list_in[0])[1][1]
             pipe_width = (pipe_list_in[0])[1][0]
 
-        if mario_x >= pipe_x - pipe_width // 2 and mario_x <= pipe_x + pipe_width // 2 and mario_y < pipe_y:             #check if mario is above a pipe
-           # print("SUCCESSFUL LANDING")
-
-           # print("STATS: ", stuck, " AND ", jumping)
-           
+        if mario_x >= pipe_x - pipe_width // 2 and mario_x <= pipe_x + pipe_width // 2 and mario_y < pipe_y:             #check if mario is above a pipe    
 
             if stuck == 0 and prev_action == 4:
                 stuck = 2
                 return 0, stuck, jumping
 
             else:
-                if len(enemy_list) > 0:                                                     #if there are mobs ahead
+                if len(enemy_list) > 0: #if there are mobs ahead
                     if len(pipe_list_in) >= 2:
                         if abs((pipe_list_in[0])[0][0] - (pipe_list_in[1])[0][0]) < 130:
                             return 4, stuck, jumping
@@ -603,11 +592,11 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
                     for mob in enemy_list:
                         x_co, y_co = mob
 
-                        if abs(mario_y + pipe_height - y_co) < 5 and abs(x_co - mario_x) < 20:      #if the mob is on the base level (pipe's base) and it would be too close to mario if he was to walk down
+                        if abs(mario_y + pipe_height - y_co) < 5 and abs(x_co - mario_x) < 20: #if the mob is on the base level (pipe's base) and it would be too close to mario if he was to walk down
                             stuck = 2
                             return 0, stuck, jumping
 
-                        elif abs(mario_y + pipe_height - y_co) > 5:                                 #if the mob is not on the same level as mario, just move on to explore the next mob
+                        elif abs(mario_y + pipe_height - y_co) > 5: #if the mob is not on the same level as mario, just move on to explore the next mob
                             continue
 
                         else:
@@ -620,7 +609,7 @@ def rule_based_agent(info, mario_locations, enemy_locations, block_locations, it
                     else:
                         return 1, stuck, jumping
 
-        else:                                                                           #then mario has squashed a mob, dont need checking
+        else: #then mario has squashed a mob, dont need checking
             return 1, stuck, jumping
 
 

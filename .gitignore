@@ -3,3 +3,7 @@ src/
 venv/
 *.code-workspace
 *.rtf
+
+Uvipen Compare/*
+YUMOUWEI/*
+Data Scripting/*
